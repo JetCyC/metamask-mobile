@@ -24,7 +24,7 @@ import Device from '../../../util/Device';
 import Icon from 'react-native-vector-icons/Octicons';
 import Confetti from '../../UI/Confetti';
 import { getOnboardingNavbarOptions } from '../../UI/Navbar';
-import { ONBOARDING_WIZARD, METRICS_OPT_IN } from '../../../constants/storage';
+import { ONBOARDING_WIZARD, METRICS_OPT_IN, SEED_PHRASE_HINTS } from '../../../constants/storage';
 
 const styles = StyleSheet.create({
 	mainWrapper: {
@@ -147,10 +147,10 @@ class ManualBackupStep3 extends PureComponent {
 	saveSeedphrase = async () => {
 		if (!this.state.hintText) return;
 		this.toggleHint();
-		const currentSeedphraseHints = await AsyncStorage.getItem('seedphraseHints');
+		const currentSeedphraseHints = await AsyncStorage.getItem(SEED_PHRASE_HINTS);
 		const parsedHints = JSON.parse(currentSeedphraseHints);
 		await AsyncStorage.setItem(
-			'seedphraseHints',
+			SEED_PHRASE_HINTS,
 			JSON.stringify({ ...parsedHints, manualBackup: this.state.hintText })
 		);
 	};
