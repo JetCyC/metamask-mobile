@@ -135,7 +135,7 @@ class ManualBackupStep3 extends PureComponent {
 	};
 
 	toggleHint = () => {
-		this.setState({ showHint: !this.state.showHint });
+		this.setState(state => ({ showHint: !state.showHint }));
 	};
 
 	learnMore = () =>
@@ -144,15 +144,13 @@ class ManualBackupStep3 extends PureComponent {
 			title: strings('drawer.metamask_support')
 		});
 
-	saveSeedphrase = async () => {
-		if (!this.state.hintText) return;
+	saveHint = async () => {
+		const { hintText } = this.state;
+		if (!hintText) return;
 		this.toggleHint();
 		const currentSeedphraseHints = await AsyncStorage.getItem(SEED_PHRASE_HINTS);
 		const parsedHints = JSON.parse(currentSeedphraseHints);
-		await AsyncStorage.setItem(
-			SEED_PHRASE_HINTS,
-			JSON.stringify({ ...parsedHints, manualBackup: this.state.hintText })
-		);
+		await AsyncStorage.setItem(SEED_PHRASE_HINTS, JSON.stringify({ ...parsedHints, manualBackup: hintText }));
 	};
 
 	done = async () => {
@@ -179,7 +177,7 @@ class ManualBackupStep3 extends PureComponent {
 				confirmText={strings('manual_backup_step_3.save')}
 				confirmButtonMode={'confirm'}
 				onCancelPress={this.toggleHint}
-				onConfirmPress={this.saveSeedphrase}
+				onConfirmPress={this.saveHint}
 				modalVisible={showHint}
 				onRequestClose={Keyboard.dismiss}
 			>
