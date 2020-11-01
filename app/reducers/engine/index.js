@@ -9,8 +9,9 @@ const initialState = {
 let engineInitialized = false;
 
 function initalizeEngine(state = {}) {
+	console.log('cyc---initalizeEngine1',state);
 	Engine.init(state);
-
+	console.log('cyc---initalizeEngine2',state);
 	Engine.datamodel &&
 		Engine.datamodel.subscribe(() => {
 			if (!engineInitialized) {
@@ -85,6 +86,7 @@ function initalizeEngine(state = {}) {
 }
 
 const engineReducer = (state = initialState, action) => {
+	console.log('cyc---engineReducer',JSON.stringify(state),action.type);
 	switch (action.type) {
 		case REHYDRATE:
 			initalizeEngine(action.payload && action.payload.engine && action.payload.engine.backgroundState);

@@ -7,12 +7,12 @@ const SENTRY_DSN_DEV = 'https://332890de43e44fe2bc070bb18d0934ea@sentry.io/26515
 
 // Setup sentry remote error reporting
 export default function setupSentry() {
-	const environment = __DEV__ || !METAMASK_ENVIRONMENT ? 'development' : METAMASK_ENVIRONMENT;
-	const dsn = environment === 'production' ? SENTRY_DSN_PROD : SENTRY_DSN_DEV;
-	init({
-		dsn,
-		debug: __DEV__,
-		environment,
-		integrations: [new Dedupe(), new ExtraErrorData()]
-	});
+	// const environment = __DEV__ || !METAMASK_ENVIRONMENT ? 'development' : METAMASK_ENVIRONMENT;
+	// const dsn = environment === 'production' ? SENTRY_DSN_PROD : SENTRY_DSN_DEV;
+	// init({
+	// 	dsn,
+	// 	debug: __DEV__,
+	// 	environment,
+	// 	integrations: [new Dedupe(), new ExtraErrorData()]
+	// });
 }

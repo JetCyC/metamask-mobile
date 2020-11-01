@@ -99,7 +99,8 @@ class Engine {
 									const selectedAddress = this.datamodel.context.PreferencesController.state
 										.selectedAddress;
 									end(null, isUnlocked && isEnabled && selectedAddress ? [selectedAddress] : []);
-								}
+								},
+								projectId:'ef5cbb0d3af84ef7a951c9f6d6eb9c29'
 							}
 						},
 						{ network: '1', provider: { type: 'mainnet' } }
@@ -469,6 +470,7 @@ export default {
 		return instance.refreshTransactionHistory(forceCheck);
 	},
 	init(state) {
+		console.log('cyc---init(state)',state)
 		instance = new Engine(state);
 		Object.freeze(instance);
 		return instance;
