@@ -99,9 +99,9 @@ class Engine {
 									const selectedAddress = this.datamodel.context.PreferencesController.state
 										.selectedAddress;
 									end(null, isUnlocked && isEnabled && selectedAddress ? [selectedAddress] : []);
-								},
-								projectId:'ef5cbb0d3af84ef7a951c9f6d6eb9c29'
-							}
+								}
+							},//TODO 写自己的infuraid
+							infuraProjectId:'5dfdc55fdeb147dfb0d28c954adf610b'
 						},
 						{ network: '1', provider: { type: 'mainnet' } }
 					),
