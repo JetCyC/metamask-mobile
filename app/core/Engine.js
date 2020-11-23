@@ -10,7 +10,6 @@ import {
 	PersonalMessageManager,
 	MessageManager,
 	NetworkController,
-	NetworkStatusController,
 	PhishingController,
 	PreferencesController,
 	TokenBalancesController,
@@ -104,7 +103,6 @@ class Engine {
 						},
 						{ network: '1', provider: { type: 'mainnet' } }
 					),
-					new NetworkStatusController(),
 					new PhishingController(),
 					new PreferencesController(
 						{},
@@ -218,7 +216,7 @@ class Engine {
 			}
 			await AsyncStorage.setItem(LAST_INCOMING_TX_BLOCK_INFO, JSON.stringify(allLastIncomingTxBlocks));
 		} catch (e) {
-			Logger.log('Error while fetching all txs', e);
+			// Logger.log('Error while fetching all txs', e);
 		}
 	};
 
@@ -422,7 +420,6 @@ export default {
 			KeyringController,
 			PersonalMessageManager,
 			NetworkController,
-			NetworkStatusController,
 			PreferencesController,
 			PhishingController,
 			TokenBalancesController,
@@ -441,7 +438,6 @@ export default {
 			KeyringController,
 			PersonalMessageManager,
 			NetworkController,
-			NetworkStatusController,
 			PhishingController,
 			PreferencesController,
 			TokenBalancesController,

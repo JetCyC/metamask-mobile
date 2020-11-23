@@ -14,7 +14,14 @@ import { getNetworkTypeById } from '../util/networks';
 class DeeplinkManager {
 	constructor(_navigation) {
 		this.navigation = _navigation;
+		this.pendingDeeplink = null;
 	}
+
+	setDeeplink = url => (this.pendingDeeplink = url);
+
+	getPendingDeeplink = () => this.pendingDeeplink;
+
+	expireDeeplink = () => (this.pendingDeeplink = null);
 
 	async handleEthereumUrl(url, origin) {
 		let ethUrl = '';
@@ -26,11 +33,15 @@ class DeeplinkManager {
 		}
 
 		const functionName = ethUrl.function_name;
-
 		if (!functionName || functionName === 'transfer') {
-			this.navigation.navigate('SendView', {
-				txMeta: { ...ethUrl, action: !functionName ? 'send-eth' : 'send-token', source: url }
-			});
+			const txMeta = { ...ethUrl, source: url };
+			if (ethUrl.parameters?.value || ethUrl.parameters?.uint256) {
+				this.navigation.navigate('SendView', {
+					txMeta: { ...txMeta, action: !functionName ? 'send-eth' : 'send-token' }
+				});
+			} else {
+				this.navigation.navigate('SendFlowView', { txMeta });
+			}
 		} else if (functionName === 'approve') {
 			// add approve transaction
 			const {
@@ -66,7 +77,7 @@ class DeeplinkManager {
 		});
 	}
 
-	parse(url, { browserCallBack, origin }) {
+	parse(url, { browserCallBack, origin, onHandled }) {
 		const urlObj = new URL(url);
 		let params;
 
@@ -78,12 +89,15 @@ class DeeplinkManager {
 			}
 		}
 
+		const handled = () => onHandled?.();
+
 		const { MM_UNIVERSAL_LINK_HOST } = AppConstants;
 
 		switch (urlObj.protocol.replace(':', '')) {
 			case 'http':
 			case 'https':
 				// Universal links
+				handled();
 				if (urlObj.hostname === MM_UNIVERSAL_LINK_HOST) {
 					// action is the first parth of the pathname
 					const action = urlObj.pathname.split('/')[1];
@@ -120,6 +134,8 @@ class DeeplinkManager {
 					}
 				} else {
 					// Normal links (same as dapp)
+
+					handled();
 					urlObj.set('protocol', 'https:');
 					this.handleBrowserUrl(urlObj.href, browserCallBack);
 				}
@@ -128,6 +144,7 @@ class DeeplinkManager {
 			// walletconnect related deeplinks
 			// address, transactions, etc
 			case 'wc':
+				handled();
 				if (!WalletConnect.isValidUri(url)) return;
 				// eslint-disable-next-line no-case-declarations
 				const redirect = params && params.redirect;
@@ -136,6 +153,7 @@ class DeeplinkManager {
 				WalletConnect.newSession(url, redirect, autosign);
 				break;
 			case 'ethereum':
+				handled();
 				this.handleEthereumUrl(url, origin);
 				break;
 
@@ -143,6 +161,7 @@ class DeeplinkManager {
 			// For ex. navigate to a specific dapp
 			case 'dapp':
 				// Enforce https
+				handled();
 				urlObj.set('protocol', 'https:');
 				this.handleBrowserUrl(urlObj.href, browserCallBack);
 				break;
@@ -150,26 +169,26 @@ class DeeplinkManager {
 			// Specific to the MetaMask app
 			// For ex. go to settings
 			case 'metamask':
+				handled();
 				break;
+			default:
+				return false;
 		}
+
+		return true;
 	}
 }
 
 let instance = null;
-let pendingDeeplink = null;
 
 const SharedDeeplinkManager = {
 	init: navigation => {
 		instance = new DeeplinkManager(navigation);
 	},
 	parse: (url, args) => instance.parse(url, args),
-	setDeeplink: url => {
-		pendingDeeplink = url;
-	},
-	getPendingDeeplink: () => pendingDeeplink,
-	expireDeeplink: () => {
-		pendingDeeplink = null;
-	}
+	setDeeplink: url => instance.setDeeplink(url),
+	getPendingDeeplink: () => instance.getPendingDeeplink(),
+	expireDeeplink: () => instance.expireDeeplink()
 };
 
 export default SharedDeeplinkManager;
